@@ -19,7 +19,7 @@ pipeline {
 
         stage('Build & Test') {
             steps {
-                sh """
+                bat """
                     mvn clean test -Ddata.source=${params.DATA_SOURCE} -Dselenium.headless=true
                 """
             }
