@@ -1,22 +1,37 @@
 pipeline {
     agent any
+
     parameters {
         choice(name: 'DATA_SOURCE', choices: ['csv', 'excel'], description: 'Choose dataset')
     }
+
+    tools {
+        maven 'Maven'   // Maven configured in Global Tool Config (name = Maven)
+        jdk 'JDK17'     // JDK configured in Global Tool Config
+    }
+
     stages {
-        stage('Run Tests') {
+        stage('Checkout') {
             steps {
-                sh """
-                mvn clean test -Ddata.source=${params.DATA_SOURCE} -Dselenium.headless=true
-                """
+                checkout scm
             }
         }
+
+        stage('Build & Test') {
+    steps {
+        bat """
+            mvn clean test -Ddata.source=${params.DATA_SOURCE} -Dselenium.headless=true
+        """
     }
+}
+    }
+
     post {
-        always {
-            allure([
-                path: 'target/allure-results'
-            ])
-        }
+    always {
+        allure([
+            results: [[path: 'target/allure-results']],
+            commandline: 'Allure'
+        ])
     }
+}
 }
