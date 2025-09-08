@@ -6,7 +6,7 @@ pipeline {
     }
 
     tools {
-        maven 'Maven'   // Maven configured in Global Tool Config (name = Maven)
+        maven 'Maven'   // Maven configured in Global Tool Config
         jdk 'JDK17'     // JDK configured in Global Tool Config
     }
 
@@ -18,20 +18,20 @@ pipeline {
         }
 
         stage('Build & Test') {
-    steps {
-        bat """
-            mvn clean test -Ddata.source=${params.DATA_SOURCE} -Dselenium.headless=true
-        """
-    }
-}
+            steps {
+                bat """
+                    mvn clean test -Ddata.source=${params.DATA_SOURCE} -Dselenium.headless=true
+                """
+            }
+        }
     }
 
     post {
-    always {
-        allure([
-            results: [[path: 'target/allure-results']],
-            commandline: 'Allure'
-        ])
+        always {
+            allure([
+                results: [[path: 'target/allure-results']],
+                commandline: 'Allure'
+            ])
+        }
     }
-}
 }
